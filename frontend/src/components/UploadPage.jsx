@@ -18,12 +18,16 @@ export default function UploadPage() {
     formData.append("file", file);
 
     try {
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/upload/csv`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${getToken()}`,
-        },
-      });
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/upload/csv`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${getToken()}`,
+          },
+        }
+      );
       setResult(res.data);
     } catch (err) {
       alert(err.response?.data?.message || "Upload failed");
@@ -35,7 +39,14 @@ export default function UploadPage() {
       <h2>Upload CSV & Distribute</h2>
 
       {/* Styled file input */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+          marginTop: 20,
+        }}
+      >
         <label
           htmlFor="file-upload"
           style={{
@@ -74,19 +85,41 @@ export default function UploadPage() {
         </button>
       </div>
 
-      {/* JSON output */}
+      {/* Table output */}
       {result && (
-        <pre
-          style={{
-            marginTop: 20,
-            background: "#f4f4f4",
-            padding: 10,
-            maxHeight: 300,
-            overflowY: "auto",
-          }}
-        >
-          {JSON.stringify(result, null, 2)}
-        </pre>
+        <div style={{ marginTop: 20 }}>
+          <h3>Distribution Result</h3>
+          <table
+            border="1"
+            cellPadding="8"
+            style={{
+              borderCollapse: "collapse",
+              marginTop: 10,
+              width: "100%",
+              textAlign: "center",
+            }}
+          >
+            <thead>
+              <tr>
+                <th>Agent</th>
+                <th>Assigned Count</th>
+              </tr>
+            </thead>
+            <tbody>
+              {result.distributions &&
+                result.distributions.map((d, idx) => (
+                  <tr key={idx}>
+                    <td>{d.agent}</td>
+                    <td>{d.assignedCount}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+
+          <p style={{ marginTop: 10 }}>
+            <strong>Total Records:</strong> {result.total}
+          </p>
+        </div>
       )}
     </div>
   );
